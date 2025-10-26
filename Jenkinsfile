@@ -5,7 +5,7 @@ pipeline {
         SONAR_TOKEN = 'sqa_8f7503988dc85ab2a7d9c3939d609b9205823e30'
     }
 
-
+    stages {
         stage('Build') {
             steps {
                 sh 'echo "Build step - Studi Kasus 5"'

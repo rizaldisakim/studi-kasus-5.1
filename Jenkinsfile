@@ -26,7 +26,7 @@ pipeline {
 
         stage('Dependency Check') {
             steps {
-                sh 'dependency-check.sh --project MyProject --format HTML --out dependency-check-report'
+                sh 'docker run --rm -v $PWD:/src owasp/dependency-check:latest --project MyProject --format HTML --out /src/dependency-check-report'
             }
         }
 

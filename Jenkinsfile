@@ -5,16 +5,10 @@ pipeline {
         SONAR_TOKEN = 'sqa_8f7503988dc85ab2a7d9c3939d609b9205823e30'
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/rizaldisakim/studi-kasus-5.1.git'
-            }
-        }
 
         stage('Build') {
             steps {
-                sh 'echo "Build step - ganti sesuai proyekmu"'
+                sh 'echo "Build step - Studi Kasus 5"'
             }
         }
 
@@ -25,7 +19,7 @@ pipeline {
                         -Dsonar.projectKey=MyProject \
                         -Dsonar.sources=. \
                         -Dsonar.host.url=http://localhost:9000 \
-                        -Dsonar.login=${sqa_8f7503988dc85ab2a7d9c3939d609b9205823e30}
+                        -Dsonar.login=${SONAR_TOKEN}
                 '''
             }
         }

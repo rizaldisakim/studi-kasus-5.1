@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     environment {
+        JAVA_HOME = "/opt/java/openjdk"
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
         SONAR_HOST_URL = "http://sonarqube:9000"
     }
 
@@ -20,6 +22,9 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+                // Verify correct Java version
+                sh 'java -version'
+                
                 // Use the Jenkins stored SonarQube token
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_LOGIN')]) {
                     sh """

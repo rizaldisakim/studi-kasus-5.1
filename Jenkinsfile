@@ -3,8 +3,7 @@ pipeline {
 
     environment {
         SONAR_HOST_URL = "http://localhost:9000"
-        SONAR_LOGIN = credentials('sqa_eed4ea4bdaecc3170bab700ef205728a2ecca31e')
-    }
+      }
 
     stages {
         stage('Checkout Code') {
@@ -15,13 +14,15 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+		withCredentials([string(credentialsId: 'sqa_eed4ea4bdaecc3170bab700ef205728a2ecca31e', variable: 'SONAR_LOGIN')]) {
                 sh """
                 sonar-scanner \
                     -Dsonar.projectKey=DemoProject \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=${SONAR_HOST_URL} \
-                    -Dsonar.login=${SONAR_LOGIN}
+                    -Dsonar.host.url=$SONAR_HOST_URL \
+                    -Dsonar.login=$SONAR_LOGIN
                 """
+		}
             }
         }
     }

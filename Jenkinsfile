@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        // Ensure Jenkins uses Java 21
         JAVA_HOME = "/opt/java/openjdk"
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
         SONAR_HOST_URL = "http://sonarqube:9000"
@@ -26,12 +27,13 @@ pipeline {
                     java -version
 
                     echo "Checking sonar-scanner..."
-                    if [ ! -x /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner ]; then
+                    SCANNER_PATH=/var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner
+                    if [ ! -x "$SCANNER_PATH" ]; then
                         echo "ERROR: sonar-scanner not found or not executable!"
                         exit 1
                     fi
 
-                    ls -l /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/
+                    ls -l $(dirname $SCANNER_PATH)
                 '''
             }
         }

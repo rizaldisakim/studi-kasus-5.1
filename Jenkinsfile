@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
+                // Checkout main branch
                 checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
@@ -19,9 +20,10 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+                // Use the Jenkins stored SonarQube token
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_LOGIN')]) {
                     sh """
-                    sonar-scanner \
+                    /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner \
                         -Dsonar.projectKey=DemoProject \
                         -Dsonar.sources=. \
                         -Dsonar.host.url=${SONAR_HOST_URL} \
@@ -33,7 +35,11 @@ pipeline {
     }
 
     post {
-        success { echo "Pipeline selesai sukses ✅" }
-        failure { echo "Pipeline gagal ❌" }
+        success {
+            echo "Pipeline selesai sukses ✅"
+        }
+        failure {
+            echo "Pipeline gagal ❌"
+        }
     }
 }

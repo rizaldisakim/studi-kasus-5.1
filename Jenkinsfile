@@ -1,4 +1,4 @@
-pipeline {
+kpipeline {
     agent any
 
     environment {
@@ -8,14 +8,20 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Explicitly checkout the 'main' branch
-                git branch: 'main', url: 'https://github.com/rizaldisakim/studi-kasus-5.1.git'
+                // Checkout the main branch from the repo
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/rizaldisakim/studi-kasus-5.1.git'
+                    ]]
+                ])
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'sqa_eed4ea4bdaecc3170bab700ef205728a2ecca31e', variable: 'SONAR_LOGIN')]) {
+                // Use the Jenkins stored credential for SonarQube token
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_LOGIN')]) {
                     sh """
                     sonar-scanner \
                         -Dsonar.projectKey=DemoProject \

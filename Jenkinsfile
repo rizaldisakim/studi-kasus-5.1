@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        SONAR_HOST_URL = "http://sonarqube:9000"
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -16,15 +20,16 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_LOGIN')]) {
-                    sh """
+                    sh '''#!/bin/bash
+                        echo "Running SonarQube analysis via Docker..."
                         docker run --rm \
-                        -e SONAR_HOST_URL=http://sonarqube:9000 \
-                        -e SONAR_LOGIN=$SONAR_LOGIN \
-                        -v \$(pwd):/usr/src \
-                        sonarsource/sonar-scanner-cli \
-                        -Dsonar.projectKey=DemoProject \
-                        -Dsonar.sources=/usr/src
-                    """
+                            -e SONAR_HOST_URL=${SONAR_HOST_URL} \
+                            -e SONAR_LOGIN=${SONAR_LOGIN} \
+                            -v ${WORKSPACE}:/usr/src \
+                            sonarsource/sonar-scanner-cli \
+                            -Dsonar.projectKey=DemoProject \
+                            -Dsonar.sources=/usr/src
+                    '''
                 }
             }
         }
@@ -35,4 +40,3 @@ pipeline {
         failure { echo "Pipeline gagal ❌" }
     }
 }
-

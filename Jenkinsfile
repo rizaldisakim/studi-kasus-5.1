@@ -20,20 +20,34 @@ pipeline {
             }
         }
 
+        stage('Verify Environment') {
+            steps {
+                // Verify Java and sonar-scanner exist
+                sh '''
+                    echo "Java version:"
+                    java -version
+
+                    if [ ! -f /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner ]; then
+                        echo "ERROR: sonar-scanner not found!"
+                        exit 1
+                    fi
+
+                    ls -l /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/
+                '''
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
-                // Verify correct Java version
-                sh 'java -version'
-                
-                // Use the Jenkins stored SonarQube token
+                // Use the Jenkins stored SonarQube token safely
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_LOGIN')]) {
-                    sh """
-                    /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner \
-                        -Dsonar.projectKey=DemoProject \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_LOGIN}
-                    """
+                    sh '''
+                        /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner \
+                            -Dsonar.projectKey=DemoProject \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=$SONAR_HOST_URL \
+                            -Dsonar.login=$SONAR_LOGIN
+                    '''
                 }
             }
         }

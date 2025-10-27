@@ -10,7 +10,6 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout main branch
                 checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
@@ -22,13 +21,13 @@ pipeline {
 
         stage('Verify Environment') {
             steps {
-                // Verify Java and sonar-scanner exist
                 sh '''
                     echo "Java version:"
                     java -version
 
-                    if [ ! -f /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner ]; then
-                        echo "ERROR: sonar-scanner not found!"
+                    echo "Checking sonar-scanner..."
+                    if [ ! -x /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner ]; then
+                        echo "ERROR: sonar-scanner not found or not executable!"
                         exit 1
                     fi
 
@@ -39,9 +38,13 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                // Use the Jenkins stored SonarQube token safely
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_LOGIN')]) {
                     sh '''
+                        export JAVA_HOME=/opt/java/openjdk
+                        export PATH=$JAVA_HOME/bin:$PATH
+                        export SONAR_HOST_URL=http://sonarqube:9000
+
+                        echo "Running SonarQube analysis..."
                         /var/jenkins_home/sonar-scanner-4.8.1.3023-linux/bin/sonar-scanner \
                             -Dsonar.projectKey=DemoProject \
                             -Dsonar.sources=. \

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-	SONAR_HOST_URL = "http://localhost:9000"
+        SONAR_HOST_URL = "http://localhost:9000"
         SONAR_LOGIN = credentials('sqa_476a8d2282c8f4cf78ab4f9d9b1616194771c257')
     }
 
@@ -19,14 +19,12 @@ pipeline {
                 sonar-scanner \
                     -Dsonar.projectKey=DemoProject \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=$SONAR_HOST_URL \
-                    -Dsonar.login=$SONAR_LOGIN
+                    -Dsonar.host.url=${SONAR_HOST_URL} \
+                    -Dsonar.login=${SONAR_LOGIN}
                 """
             }
         }
     }
-}
-
 
     post {
         success {

@@ -2,44 +2,31 @@ pipeline {
     agent any
 
     environment {
-        SONAR_TOKEN = 'sqa_8f7503988dc85ab2a7d9c3939d609b9205823e30'
+	SONAR_HOST_URL = "http://localhost:9000"
+        SONAR_LOGIN = credentials('sqa_476a8d2282c8f4cf78ab4f9d9b1616194771c257')
     }
 
     stages {
-        stage('Build') {
+        stage('Checkout Code') {
             steps {
-                sh 'echo "Build step - Studi Kasus 5"'
+                git 'https://github.com/rizaldisakim/studi-kasus-5.1.git'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                sh '''
-                    sonar-scanner \
-                        -Dsonar.projectKey=MyProject \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://sonarqube:9000 \
-                        -Dsonar.login=${SONAR_TOKEN}
-                '''
-            }
-        }
-
-        stage('Dependency Check') {
-            steps {
-                sh 'docker run --rm -v $PWD:/src owasp/dependency-check:latest --project MyProject --format HTML --out /src/dependency-check-report'
-            }
-        }
-
-        stage('Publish HTML Report') {
-            steps {
-                publishHTML([
-                    reportDir: 'dependency-check-report',
-                    reportFiles: 'index.html',
-                    reportName: 'Dependency Check Report'
-                ])
+                sh """
+                sonar-scanner \
+                    -Dsonar.projectKey=DemoProject \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=$SONAR_HOST_URL \
+                    -Dsonar.login=$SONAR_LOGIN
+                """
             }
         }
     }
+}
+
 
     post {
         success {

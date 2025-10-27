@@ -1,4 +1,4 @@
-kpipeline {
+pipeline {
     agent any
 
     environment {
@@ -8,7 +8,6 @@ kpipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout the main branch from the repo
                 checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
@@ -20,7 +19,6 @@ kpipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                // Use the Jenkins stored credential for SonarQube token
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_LOGIN')]) {
                     sh """
                     sonar-scanner \
@@ -35,11 +33,7 @@ kpipeline {
     }
 
     post {
-        success {
-            echo "Pipeline selesai sukses ✅"
-        }
-        failure {
-            echo "Pipeline gagal ❌"
-        }
+        success { echo "Pipeline selesai sukses ✅" }
+        failure { echo "Pipeline gagal ❌" }
     }
 }

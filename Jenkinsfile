@@ -1,3 +1,4 @@
+
 agent any
 
 environment {
@@ -20,7 +21,7 @@ stages {
 
     stage('SonarQube Analysis') {
         steps {
-            withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_LOGIN')]) {
+            withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_LOGIN')]) {
                 sh '''#!/bin/bash
                     echo "Running SonarQube analysis via Docker..."
                     docker run --rm \

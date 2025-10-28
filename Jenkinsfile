@@ -8,8 +8,11 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
+                // Clean checkout to avoid "not in a git directory" errors
                 checkout([$class: 'GitSCM',
                     branches: [[name: '*/main']],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [[$class: 'CleanCheckout']],
                     userRemoteConfigs: [[
                         url: 'https://github.com/rizaldisakim/studi-kasus-5.1.git'
                     ]]
